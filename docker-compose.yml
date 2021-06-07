@@ -1,0 +1,77 @@
+version: '3'
+
+#secrets:
+#  demo_secret:
+#    file: ./secret_data
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: a1rfl0w
+      POSTGRES_USER : airflowuser
+      POSTGRES_DB : airflow
+      
+      AIRFLOW_SCHEMA: airflow
+    expose:
+      - 5432
+    restart: always
+    volumes:
+      - ./postgres_script:/docker-entrypoint-initdb.d
+#    secrets:
+#      - postgres_secret
+      # - ./sample_data:/sample_data
+
+#  postgres-dbt:
+#    image: postgres
+#    environment:
+#      POSTGRES_PASSWORD: pssd
+#      POSTGRES_USER : dbtuser
+#      POSTGRES_DB : dbtdb
+#      DBT_SCHEMA: dbt
+#      DBT_RAW_DATA_SCHEMA: dbt_raw_data
+#    expose:
+#      - 5432
+#    restart: always
+
+  airflow:
+    build: .
+    restart: always
+    environment: 
+      DBT_PROFILES_DIR: /dbt
+      AIRFLOW_HOME: /airflow
+      AIRFLOW__CORE__DAGS_FOLDER: /airflow/dags
+      AIRFLOW__CORE__PARALLELISM: 4
+      AIRFLOW__CORE__DAG_CONCURRENCY: 4
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: 4
+      POSTGRES_USER: airflowuser
+      POSTGRES_PASSWORD: a1rfl0w
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: airflow
+      AWS_REDSHIFT_HOST: redshift-cluster-2.cmwaeomvtjzi.us-east-2.redshift.amazonaws.com
+      AWS_REDSHIFT_PASSWORD: Dynamics238
+      AWS_REDSHIFT_PORT: 5439
+      AWS_REDSHIFT_LOGIN: awsuser
+
+    depends_on:
+      - postgres
+#      - postgres-dbt
+    ports:
+      - 8000:8080
+    volumes:
+      - ./dbt:/dbt
+      - ./airflow:/airflow
+#    secrets:
+#      - postgres_secret
+#      - redshift_secret
+
+  adminer-portal:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+#      - postgres-dbt
+
