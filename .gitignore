@@ -5,3 +5,4 @@ dbt/data/order_products__prior.csv.zip
 *.pyc
 sample_data/order_products__prior.csv.zip
 .gitkeep
+.idea/
