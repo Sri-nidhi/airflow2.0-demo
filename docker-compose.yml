@@ -53,6 +53,7 @@ services:
       AWS_REDSHIFT_PASSWORD: Dynamics238
       AWS_REDSHIFT_PORT: 5439
       AWS_REDSHIFT_LOGIN: awsuser
+      AWS_REDSHIFT_DB: dev
 
     depends_on:
       - postgres

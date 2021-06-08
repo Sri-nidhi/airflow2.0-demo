@@ -4,6 +4,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from helpers.create_tables import *
 from airflow.utils.task_group import TaskGroup
+from datetime import datetime, timedelta
 
 # [START default_args]
 default_args = {
@@ -12,22 +13,20 @@ default_args = {
     'start_date': datetime(2019, 1, 1),
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 1
+    'retries': 1,
+    'retry_delay': timedelta(seconds=10)
 }
 
 stages = [
     {"task_name": "create_schemas",
      "sql": create_schemas},
-    {"task_name": "create_staging_tables",
-         "sql": create_staging_tables},
-    {"task_name": "create_curated_tables",
-         "sql": create_curated_tables},
-    {"task_name": "create_datamart_tables",
-         "sql": create_datamart_tables}
+{"task_name": "create_landing_tables",
+         "sql": create_landing_tables}
+
 ]
 task = {}
 
-with DAG('load_initial_data',
+with DAG('create_landing_tables',
           default_args=default_args,
           description='Create Redshift tables',
           schedule_interval=None,
