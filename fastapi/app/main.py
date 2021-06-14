@@ -1,9 +1,13 @@
-
 from fastapi import FastAPI, HTTPException
 from pandas_profiling import ProfileReport
 from starlette.responses import RedirectResponse
 from fastapi.responses import FileResponse
-from db_opn import loaddf
+import pandas as pd
+from sqlalchemy import create_engine
+import os
+
+from logging.config import dictConfig
+import logging
 
 import json
 app = FastAPI()
@@ -18,14 +22,30 @@ async def show_data_profile(file_name):
         print("Fetching file from "+file_name+".html")
 
         return FileResponse("/"+file_name+".html")
-    except:
-        raise HTTPException(status_code=404, detail="File not found")
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @app.get("/generate_dataprofiling/{file_name}")
 async def generate_data_profile(file_name):
     try:
-        df = loaddf(file_name)
+        AWS_REDSHIFT_HOST = "redshift-cluster-2.cmwaeomvtjzi.us-east-2.redshift.amazonaws.com"
+        AWS_REDSHIFT_PASSWORD = "Dynamics238"
+        AWS_REDSHIFT_PORT = "5439"
+        AWS_REDSHIFT_LOGIN = "awsuser"
+        AWS_REDSHIFT_DB = "dev"
+
+        hostname = AWS_REDSHIFT_HOST
+        portno = "5439"
+        dbname = AWS_REDSHIFT_DB
+        dbusername = AWS_REDSHIFT_LOGIN
+        dbpassword = AWS_REDSHIFT_PASSWORD
+        conn_string = 'postgresql://' + dbusername + ':' + dbpassword + '@' + hostname + ':' + portno + '/' + dbname
+        print(conn_string)
+        conn = create_engine(conn_string, connect_args={'connect_timeout': 10})
+        print("Connection succeeded")
+        df = pd.read_sql_query("select * from {}".format(file_name), conn)
+        print("DF Loaded")
         profile = df.profile_report(
             title="Data profiling",
             correlations={
@@ -44,6 +64,6 @@ async def generate_data_profile(file_name):
             },
         )
         profile.to_file("/" + file_name + ".html")
-    except:
-        raise HTTPException(status_code=404, detail="Error while generating profile")
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
     return {"status": 200, "message": "Checkout the profile generated in this link /view_dataprofiling/" + file_name}

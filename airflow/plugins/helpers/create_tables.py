@@ -36,35 +36,6 @@ CREATE TABLE analytics.state_tests (
 """
 
 
-CREATE_COVID_CASES_STAGE = """
-# CREATE TABLE IF NOT EXISTS analytics.covid_cases_crtd (
-# 	test_date varchar(256) NOT NULL,
-# 	location varchar(256),
-# 	lattitude numeric(18,0),
-# 	longitude numeric(18,0)
-# );
-"""
-
-COVID_STATEWISE_TESTING_STAGE = """
-# CREATE TABLE IF NOT EXISTS analytics.state_tests_crtd (
-# 	artistid varchar(256) NOT NULL,
-# 	name varchar(256),
-# 	location varchar(256),
-# 	lattitude numeric(18,0),
-# 	longitude numeric(18,0)
-# );
-"""
-
-COVID_STATEWISE_TESTING_DMART = """
-# CREATE TABLE IF NOT EXISTS analytics.state_tests_crtd (
-# 	artistid varchar(256) NOT NULL,
-# 	name varchar(256),
-# 	location varchar(256),
-# 	lattitude numeric(18,0),
-# 	longitude numeric(18,0)
-# );
-"""
-
 create_schemas = [CREATE_SCHEMA_STG]
 create_landing_tables = [DROP_COVID_CASES_LAND, CREATE_COVID_CASES_LAND,
                          DROP_STATEWISE_TESTING_LAND, CREATE_STATEWISE_TESTING_LAND]
