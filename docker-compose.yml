@@ -1,9 +1,5 @@
 version: '3'
 
-#secrets:
-#  demo_secret:
-#    file: ./secret_data
-
 services:
   postgres:
     image: postgres
@@ -18,14 +14,11 @@ services:
     restart: always
     volumes:
       - ./postgres_script:/docker-entrypoint-initdb.d
-#    secrets:
-#      - postgres_secret
-      # - ./sample_data:/sample_data
 
 #  postgres-dbt:
 #    image: postgres
 #    environment:
-#      POSTGRES_PASSWORD: pssd
+#      POSTGRES_PASSWORD:
 #      POSTGRES_USER : dbtuser
 #      POSTGRES_DB : dbtdb
 #      DBT_SCHEMA: dbt
@@ -34,8 +27,27 @@ services:
 #      - 5432
 #    restart: always
 
+#
+#  fast-api:
+#    build:
+#      dockerfile: fastapidockerfile
+#      context: .
+#    restart: always
+#    volumes:
+#      - ./fastapi:/app
+#    ports:
+#      - 9000:9000
+#    environment:
+#      AWS_REDSHIFT_HOST: redshift-cluster-2.cmwaeomvtjzi.us-east-2.redshift.amazonaws.com
+#      AWS_REDSHIFT_PASSWORD: Dynamics238
+#      AWS_REDSHIFT_PORT: 5439
+#      AWS_REDSHIFT_LOGIN: awsuser
+#      AWS_REDSHIFT_DB: dev
+
   airflow:
-    build: .
+    build: 
+      dockerfile: dockerfile  
+      context: .
     restart: always
     environment: 
       DBT_PROFILES_DIR: /dbt
@@ -48,11 +60,12 @@ services:
       POSTGRES_PASSWORD: a1rfl0w
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
-      POSTGRES_DB: airflow
-      AWS_REDSHIFT_HOST: redshift-cluster-2.cmwaeomvtjzi.us-east-2.redshift.amazonaws.com
-      AWS_REDSHIFT_PASSWORD: Dynamics238
+      POSTGRES_DB: <pg_database>
+      AWS_REDSHIFT_HOST: <host_name>
+      AWS_REDSHIFT_PASSWORD: <password>
       AWS_REDSHIFT_PORT: 5439
       AWS_REDSHIFT_LOGIN: awsuser
+      AWS_REDSHIFT_DB: <rdshift_database>
 
     depends_on:
       - postgres
@@ -62,9 +75,7 @@ services:
     volumes:
       - ./dbt:/dbt
       - ./airflow:/airflow
-#    secrets:
-#      - postgres_secret
-#      - redshift_secret
+
 
   adminer-portal:
     image: adminer
@@ -73,5 +84,5 @@ services:
       - 8080:8080
     depends_on:
       - postgres
-#      - postgres-dbt
+
 

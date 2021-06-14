@@ -4,30 +4,40 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from helpers.create_tables import *
 from airflow.utils.task_group import TaskGroup
-
+from airflow.utils.trigger_rule import TriggerRule
+from datetime import datetime, timedelta
+from helpers.alert import task_success_alert, task_failure_alert
+# from functools import partial
+from airflow.models import Variable
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 # [START default_args]
+
 default_args = {
-    'owner': 'airflow',
+    'owner': 'srinidhi',
     'depends_on_past': False,
     'start_date': datetime(2019, 1, 1),
-    'email_on_failure': False,
+    'on_failure_callback': task_failure_alert,
     'email_on_retry': False,
-    'retries': 1
+    'retries': 1,
+    'retry_delay': timedelta(seconds=10)
 }
+
+
+full_refresh = Variable.get("full_refresh")
+# def check_trigger(context, dag_run_obj):
+#     if full_refresh.lower() == 'y':
+#         return dag_run_obj
 
 stages = [
     {"task_name": "create_schemas",
      "sql": create_schemas},
-    {"task_name": "create_staging_tables",
-         "sql": create_staging_tables},
-    {"task_name": "create_curated_tables",
-         "sql": create_curated_tables},
-    {"task_name": "create_datamart_tables",
-         "sql": create_datamart_tables}
+{"task_name": "create_landing_tables",
+         "sql": create_landing_tables}
+
 ]
 task = {}
-
-with DAG('load_initial_data',
+# send_success_notification = partial(task_success_alert)modes
+with DAG('create_landing_tables',
           default_args=default_args,
           description='Create Redshift tables',
           schedule_interval=None,
@@ -35,7 +45,6 @@ with DAG('load_initial_data',
           tags=['demo']
         ) as dag:
 
-    create_ddl = DummyOperator(task_id="create_ddl_group")
 
     with TaskGroup(group_id='ddl') as create_tables:
         for i in range(0, len(stages)):
@@ -43,5 +52,9 @@ with DAG('load_initial_data',
             if i > 0:
                 task[i - 1].set_downstream(task[i])
 
+    trigger = TriggerDagRunOperator(
+        task_id='start_s3_load',
+        trigger_dag_id="S3toRedshift_Ingestion",
+        dag=dag)
 
-create_ddl >> create_tables
+create_tables >> trigger
