@@ -30,7 +30,7 @@ async def show_data_profile(file_name):
 async def generate_data_profile(file_name):
     try:
         AWS_REDSHIFT_HOST = "redshift-cluster-2.cmwaeomvtjzi.us-east-2.redshift.amazonaws.com"
-        AWS_REDSHIFT_PASSWORD = "Dynamics238"
+        AWS_REDSHIFT_PASSWORD = ""
         AWS_REDSHIFT_PORT = "5439"
         AWS_REDSHIFT_LOGIN = "awsuser"
         AWS_REDSHIFT_DB = "dev"
