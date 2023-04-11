@@ -1,14 +1,12 @@
-# airflow2.0-demo
-
-Slide Deck:
-
-https://speakerdeck.com/srinidhi/getting-started-with-apache-airflow-srinidhi
-
-
-
 # Airflow 2.0 Demo
 
-This is a demo project for Apache Airflow 2.0. It showcases how to set up an Airflow environment using Docker Compose, and how to create and run a simple DAG (Directed Acyclic Graph).
+This is a demo project for Apache Airflow 2.0 Tech talk. It showcases how to set up an Airflow environment using Docker Compose, and how to create and run a simple DAG (Directed Acyclic Graph).
+
+Slide Deck:
+[<img src="https://img.shields.io/badge/SpeakerDeck-%230092870.svg?&style=for-the-badge&logo=speakerdeck&logoColor=white" />](https://speakerdeck.com/srinidhi/getting-started-with-apache-airflow-srinidhi)
+
+Tech Talk: 
+[<img src="https://img.shields.io/badge/youtube-%23FF0000.svg?&style=for-the-badge&logo=youtube&logoColor=white" />](https://www.youtube.com/watch?v=iKGdg4MDEBI&t=2543s)
 
 ## Prerequisites
 
